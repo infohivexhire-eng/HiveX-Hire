@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HiveX Hire | Tech Jobs Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --primary:#2563eb;
+  --dark:#111827;
+  --gray:#6b7280;
+  --bg:#f3f4f6;
+  --white:#ffffff;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+body{background:var(--bg);color:var(--dark);}
+
+/* HEADER */
+header{
+  background:white;
+  padding:16px 50px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+}
+.logo{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.logo img{
+  width:52px;
+  height:52px;
+  object-fit:contain;
+  border-radius:4px;
+  transform: scale(2.5);
+  transform-origin: left center;
+  transition: transform 0.3s;
+}
+.logo img:hover{
+  transform: scale(2.7);
+}
+.logo h2{
+  font-size:22px;
+  font-weight:600;
+  margin-top:4px;
+}
+nav a{
+  margin-left:25px;
+  text-decoration:none;
+  font-weight:500;
+  cursor:pointer;
+  color:var(--dark);
+}
+
+/* HERO */
+.hero{
+  background:linear-gradient(to right,#2563eb,#1e40af);
+  color:white;
+  padding:60px 50px;
+}
+.hero h2{font-size:36px;margin-bottom:10px;}
+.hero p{opacity:.9;}
+
+/* SEARCH */
+.search-box{
+  background:white;
+  max-width:1100px;
+  margin:-30px auto 30px;
+  padding:20px;
+  border-radius:12px;
+  display:grid;
+  grid-template-columns:2fr 1fr auto;
+  gap:15px;
+}
+.search-box input,.search-box button{
+  padding:14px;
+  border-radius:8px;
+  border:1px solid #ddd;
+}
+.search-box button{
+  background:var(--primary);
+  color:white;
+  border:none;
+  cursor:pointer;
+}
+
+/* JOBS */
+.container{max-width:1200px;margin:auto;}
+.jobs{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(350px,1fr));
+  gap:20px;
+}
+.job-card{
+  background:white;
+  padding:20px;
+  border-radius:14px;
+  box-shadow:0 6px 20px rgba(0,0,0,.08);
+  position:relative;
+}
+.job-card h3{margin-bottom:4px;}
+.clamp{
+  display:-webkit-box;
+  -webkit-line-clamp:3;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.read-more{
+  color:var(--primary);
+  font-size:13px;
+  cursor:pointer;
+  margin-top:4px;
+  display:inline-block;
+}
+.job-footer{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:14px;
+}
+.job-footer button{
+  padding:10px 16px;
+  background:var(--primary);
+  color:white;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+/* HEART ICON */
+.heart{
+  position:absolute;
+  top:16px;
+  right:16px;
+  font-size:20px;
+  cursor:pointer;
+  color:#ddd;
+}
+.heart.filled{color:#f43f5e;}
+
+/* Skills text */
+.skills-text{
+  font-size:15px;
+  color:#6b7280;
+  margin-top:4px;
+}
+
+/* FOOTER */
+.footer{
+  background:#111827;
+  color:#e5e7eb;
+  padding:60px 20px;
+  margin-top:60px;
+  position:relative;
+}
+.footer-box{
+  max-width:1200px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:40px;
+}
+.footer h3,.footer h4{color:white;margin-bottom:14px;}
+.footer a{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:#9ca3af;
+  text-decoration:none;
+  margin-top:8px;
+}
+.footer a:hover{color:white;}
+.copy{
+  text-align:center;
+  margin-top:40px;
+  font-size:13px;
+  color:#9ca3af;
+}
+
+/* 🔒 ADDED: hidden footer admin trigger button */
+.footer-admin-trigger{
+  position:absolute;
+  bottom:14px;
+  right:18px;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#374151;
+  cursor:pointer;
+}
+.footer-admin-trigger:hover{
+  background:#2563eb;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">
+    <img src="HiveX Hire.png" alt="HiveX Hire Logo">
+    <h2></h2>
+  </div>
+  <nav>
+    <a href="knowledge.html">Knowledge Sharing / Tips</a>
+    <a onclick="showWishlist()">Wishlist ❤️</a>
+
+    <!-- EXISTING ADMIN LINK (HIDDEN BY DEFAULT) -->
+    <a href="admin.html" title="Admin Panel" id="adminLink">⚙️ Admin</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <h2>Find Your Dream Tech Job</h2>
+  <p>Verified tech jobs • Simple • Fast</p>
+</section>
+
+<div class="search-box">
+  <input placeholder="Search jobs or skills" id="searchJob">
+  <input placeholder="Location" id="searchLocation">
+  <button onclick="searchJobs()">Search</button>
+</div>
+
+<div class="container">
+  <div class="jobs" id="jobsContainer"></div>
+</div>
+
+<footer class="footer">
+  <div class="footer-box">
+    <div>
+      <h3>HiveX Hire</h3>
+      <p>
+        HiveX Hire is a tech-focused job platform built to connect candidates with verified opportunities.
+        <br><br>
+        We prioritize genuine listings, clean user experience, and fast job discovery across development,
+        data, cloud, and emerging tech roles.
+        <br><br>
+        🚧 Platform is currently in early-stage development.
+      </p>
+    </div>
+
+    <div>
+      <h4>Company</h4>
+      <a href="#">About Us</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms & Conditions</a>
+    </div>
+
+    <div>
+      <h4>Support</h4>
+      <a href="#">Help Center</a>
+      <a href="#">FAQs</a>
+      <a href="mailto:info.hivexhire@gmail.com">Contact Support</a>
+    </div>
+
+    <div>
+        <h4>Follow Us</h4>
+
+      <a href="https://www.linkedin.com/company/hivex-hire" target="_blank">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M4.98 3.5C4.98 4.88 3.88 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM0 8h5v16H0V8zm7.5 0h4.8v2.2h.1c.7-1.3 2.4-2.7 5-2.7 5.3 0 6.3 3.5 6.3 8V24h-5v-7.5c0-1.8 0-4.2-2.6-4.2-2.6 0-3 2-3 4V24h-5V8z"/>
+        </svg>
+        LinkedIn
+      </a>
+
+      <a href="https://twitter.com/" target="_blank">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M24 4.56c-.88.39-1.83.65-2.83.77a4.93 4.93 0 002.17-2.72 9.87 9.87 0 01-3.13 1.2 4.92 4.92 0 00-8.38 4.48A13.97 13.97 0 011.67 3.15a4.92 4.92 0 001.52 6.57 4.9 4.9 0 01-2.23-.62v.06a4.93 4.93 0 003.95 4.83 4.93 4.93 0 01-2.22.08 4.93 4.93 0 004.6 3.42A9.86 9.86 0 010 19.54a13.94 13.94 0 007.55 2.21c9.05 0 14-7.5 14-14v-.64A9.94 9.94 0 0024 4.56z"/>
+        </svg>
+        Twitter
+      </a>
+
+      <a href="https://www.instagram.com/" target="_blank">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2.2c3.2 0 3.6 0 4.8.07 1.17.07 1.97.24 2.43.41.6.23 1.03.5 1.48.95.45.45.72.88.95 1.48.17.46.34 1.26.41 2.43.07 1.2.07 1.6.07 4.8s0 3.6-.07 4.8c-.07 1.17-.24 1.97-.41 2.43-.23.6-.5 1.03-.95 1.48-.45.45-.88.72-1.48.95-.46.17-1.26.34-2.43.41-1.2.07-1.6.07-4.8.07s-3.6 0-4.8-.07c-1.17-.07-1.97-.24-2.43-.41-.6-.23-1.03-.5-1.48-.95-.45-.45-.72-.88-.95-1.48-.17-.46-.34-1.26-.41-2.43C2.2 15.6 2.2 15.2 2.2 12s0-3.6.07-4.8c.07-1.17.24-1.97.41-2.43.23-.6.5-1.03.95-1.48.45-.45.88-.72 1.48-.95.46-.17 1.26-.34 2.43-.41C8.4 2.2 8.8 2.2 12 2.2zm0 3.6a6.2 6.2 0 100 12.4 6.2 6.2 0 000-12.4zm0 10.2a4 4 0 110-8 4 4 0 010 8zm6.4-10.9a1.45 1.45 0 11-2.9 0 1.45 1.45 0 012.9 0z"/>
+        </svg>
+        Instagram
+      </a>
+    </div>
+  </div>
+
+  <p class="copy">© 2026 HiveX Hire Careers. All rights reserved.</p>
+
+  <!-- 🔒 ADDED: tiny hidden admin access button -->
+  <div class="footer-admin-trigger" onclick="requestAdminAccess()"></div>
+</footer>
+
+<script>
+// Wishlist
+let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+
+// Ensure jobs exist
+if(!localStorage.getItem("HIVEX_JOBS")){
+  localStorage.setItem("HIVEX_JOBS", JSON.stringify([]));
+}
+
+// 🔒 hide admin link by default
+document.getElementById("adminLink").style.display = "none";
+
+// 🔒 admin access logic
+const ADMIN_ACCESS_CODE = "HIVEX-ADMIN-ACCESS";
+
+function requestAdminAccess(){
+  const code = prompt("Enter Admin Access Code");
+  if(code === ADMIN_ACCESS_CODE){
+    document.getElementById("adminLink").style.display = "inline";
+    alert("Admin access enabled");
+  }
+}
+
+// Load jobs
+function loadJobs(filterTitle = '', filterLocation = '') {
+  const jobs = JSON.parse(localStorage.getItem("HIVEX_JOBS")) || [];
+  const box = document.getElementById("jobsContainer");
+  box.innerHTML = "";
+
+  const filtered = jobs.filter(job=>{
+    const titleMatch = job.title.toLowerCase().includes(filterTitle.toLowerCase());
+    const locationMatch = job.location.toLowerCase().includes(filterLocation.toLowerCase());
+    return titleMatch && locationMatch;
+  });
+
+  filtered.forEach((job,i)=>{
+    const isInWishlist = wishlist.includes(job.title);
+    const logoTag = job.logo ? `<img src="${job.logo}" style="width:60px;height:60px;object-fit:cover;border-radius:4px;margin-bottom:8px;">` : '';
+    box.innerHTML += `
+      <div class="job-card">
+        ${logoTag}
+        <div class="heart ${isInWishlist?'filled':''}" onclick="toggleWishlist(${i}, this)">❤️</div>
+        <h3>${job.title}</h3>
+        <p style="color:#6b7280">${job.company} • ${job.location}</p>
+        <p class="clamp" id="d${i}">${job.description}</p>
+        <span class="read-more" onclick="toggleText('d${i}',this)">Read more</span>
+        <p class="skills-text clamp" id="s${i}">
+          <strong>Skills:</strong> ${job.skills}
+        </p>
+        <span class="read-more" onclick="toggleText('s${i}',this)">Read more</span>
+        <div class="job-footer">
+          <button onclick="window.open('${job.applyLink}','_blank')">Apply</button>
+        </div>
+      </div>
+    `;
+  });
+}
+
+// Wishlist toggle
+function toggleWishlist(jobIndex, el){
+  const jobs = JSON.parse(localStorage.getItem("HIVEX_JOBS")) || [];
+  const jobTitle = jobs[jobIndex].title;
+  if(!wishlist.includes(jobTitle)){
+    wishlist.push(jobTitle);
+    localStorage.setItem("wishlist", JSON.stringify(wishlist));
+    el.classList.add("filled");
+    alert(`"${jobTitle}" added to your Wishlist ❤️`);
+  }
+}
+
+// Read more/less
+function toggleText(id,el){
+  const p=document.getElementById(id);
+  p.classList.toggle("clamp");
+  el.innerText=p.classList.contains("clamp")?"Read more":"Read less";
+}
+
+// Show wishlist
+function showWishlist(){
+  if(wishlist.length === 0){
+    alert("Your Wishlist is empty");
+  } else {
+    alert("Your Wishlist Jobs:\n\n" + wishlist.join("\n"));
+  }
+}
+
+// Search
+function searchJobs(){
+  const title = document.getElementById("searchJob").value;
+  const location = document.getElementById("searchLocation").value;
+  loadJobs(title, location);
+}
+
+// Initial load
+loadJobs();
+</script>
+
+</body>
+</html>

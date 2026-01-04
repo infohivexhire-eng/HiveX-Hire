@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HiveX Hire | Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#2563eb;
+  --danger:#ef4444;
+  --dark:#111827;
+  --bg:#f9fafb;
+  --white:#ffffff;
+  --gray:#6b7280;
+  --success:#22c55e;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+body{background:var(--bg);color:var(--dark);}
+
+/* HEADER */
+header{
+  background:white;
+  padding:20px 40px;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-radius:0 0 12px 12px;
+}
+
+/* CONTAINER */
+.container{max-width:1200px;margin:30px auto;padding:0 20px;}
+
+/* CARD */
+.card{
+  background:white;
+  padding:25px;
+  border-radius:16px;
+  box-shadow:0 8px 25px rgba(0,0,0,.08);
+  margin-bottom:30px;
+}
+
+/* FORM ELEMENTS */
+input, textarea, select{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #ddd;
+  margin-bottom:15px;
+  font-size:14px;
+}
+textarea{resize:vertical; min-height:80px; max-height:150px; overflow-y:auto;}
+label{font-size:13px;color:#374151;font-weight:600; margin-bottom:6px; display:block;}
+
+button{
+  padding:12px 22px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:600;
+  transition:0.2s;
+}
+button:hover{opacity:0.9;}
+
+.btn-primary{background:var(--primary);color:white;}
+.btn-danger{background:var(--danger);color:white;}
+.btn-outline{background:white;border:1px solid #ddd;color:var(--dark);}
+
+/* DASHBOARD */
+.dashboard{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:20px;
+}
+.stat{
+  background:#eef2ff;
+  padding:20px;
+  border-radius:14px;
+  text-align:center;
+}
+.stat h2{font-size:28px;color:#1e3a8a;margin-bottom:6px;}
+.stat p{font-size:14px;color:#475569;}
+
+/* JOB GRID */
+.jobs-grid, .posts-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(360px,1fr));
+  gap:20px;
+}
+.job-card, .post-card{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  background:white;
+  padding:18px;
+  border-radius:16px;
+  box-shadow:0 6px 18px rgba(0,0,0,.08);
+  min-height:200px;
+}
+.job-card img{
+  width:100%;
+  height:150px;
+  object-fit:contain;
+  border-radius:12px;
+  border:1px solid #eee;
+}
+.job-info h4, .post-card h4{margin-bottom:6px; font-size:16px; font-weight:600;}
+.job-info p, .post-card p{font-size:13px;color:var(--gray); line-height:1.4;}
+.job-info .description, .post-card .description{max-height:60px; overflow-y:auto; padding-right:5px; margin-bottom:6px;}
+.badge{
+  background:#e5edff;
+  color:#2563eb;
+  padding:4px 8px;
+  border-radius:6px;
+  font-size:12px;
+  margin:3px 3px 0 0;
+  display:inline-block;
+}
+.actions{display:flex;gap:10px;margin-top:auto; justify-content:flex-end;}
+
+/* MODAL */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.5);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:100;
+}
+.modal-box{
+  background:white;
+  width:500px;
+  padding:25px;
+  border-radius:16px;
+  position:relative;
+}
+.modal-box h3{margin-bottom:15px;}
+.modal-close{
+  position:absolute;
+  top:12px;
+  right:12px;
+  cursor:pointer;
+  font-weight:bold;
+  font-size:18px;
+  color:var(--gray);
+}
+
+/* LOGIN */
+#loginBox{
+  max-width:400px;
+  margin:auto;
+  text-align:center;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h2>HiveX Hire — Admin Panel</h2>
+  <span style="color:#6b7280">Manage Jobs & Knowledge</span>
+</header>
+
+<div class="container">
+
+  <!-- LOGIN -->
+  <div class="card" id="loginBox">
+    <h3>Admin Login</h3>
+    <input type="password" id="adminPass" placeholder="Admin password">
+    <button class="btn-primary" onclick="login()">Login</button>
+  </div>
+
+  <div id="adminContent" style="display:none">
+
+    <!-- DASHBOARD -->
+    <div class="dashboard">
+      <div class="stat">
+        <h2 id="totalJobs">0</h2>
+        <p>Total Jobs Available</p>
+      </div>
+      <div class="stat">
+        <h2 id="totalPosts">0</h2>
+        <p>Total Knowledge Posts</p>
+      </div>
+    </div>
+
+    <!-- ADD JOB -->
+    <div class="card">
+      <h3>Add New Job</h3>
+
+      <label>Job Title</label>
+      <input id="jobTitle">
+
+      <label>Company Name</label>
+      <input id="jobCompany">
+
+      <label>Location</label>
+      <input id="jobLocation">
+
+      <label>Company Logo</label>
+      <input type="file" id="jobLogo">
+
+      <label>Job Description</label>
+      <textarea id="jobDesc" placeholder="Enter full job description here..."></textarea>
+
+      <label>Skills (comma separated)</label>
+      <input id="jobSkills">
+
+      <label>Apply Link</label>
+      <input id="jobLink">
+
+      <button class="btn-primary" onclick="addJob()">➕ Add Job</button>
+    </div>
+
+    <!-- JOB LIST -->
+    <div class="card">
+      <h3>Available Jobs</h3>
+      <div class="jobs-grid" id="jobsContainer"></div>
+    </div>
+
+    <!-- ADD KNOWLEDGE POST -->
+    <div class="card">
+      <h3>Add Knowledge Post</h3>
+
+      <label>Post Title</label>
+      <input id="postTitle">
+
+      <label>Category</label>
+      <select id="postCategory">
+        <option value="Resume Tips">Resume Tips</option>
+        <option value="Interview Tips">Interview Tips</option>
+        <option value="Job Search Tips">Job Search Tips</option>
+        <option value="Skill Development">Skill Development</option>
+      </select>
+
+      <label>Content Type</label>
+      <select id="postType" onchange="toggleContentInput()">
+        <option value="text">Text</option>
+        <option value="pdf">PDF</option>
+      </select>
+
+      <div id="textContentDiv">
+        <label>Text Content</label>
+        <textarea id="postText" placeholder="Enter detailed text here..."></textarea>
+      </div>
+
+      <div id="pdfContentDiv" style="display:none;">
+        <label>Upload PDF</label>
+        <input type="file" id="postPDF" accept=".pdf">
+      </div>
+
+      <button class="btn-primary" onclick="addKnowledgePost()">➕ Add Post</button>
+    </div>
+
+    <!-- KNOWLEDGE LIST -->
+    <div class="card">
+      <h3>Knowledge Posts</h3>
+      <div class="posts-grid" id="postsContainer"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal" id="editModal">
+  <div class="modal-box">
+    <span class="modal-close" onclick="closeModal()">✖</span>
+    <h3>Edit Job</h3>
+
+    <label>Job Title</label>
+    <input id="editTitle">
+
+    <label>Company Name</label>
+    <input id="editCompany">
+
+    <label>Location</label>
+    <input id="editLocation">
+
+    <label>Description</label>
+    <textarea id="editDesc"></textarea>
+
+    <label>Skills</label>
+    <input id="editSkills">
+
+    <label>Apply Link</label>
+    <input id="editLink">
+
+    <button class="btn-primary" onclick="saveEdit()">Save Changes</button>
+  </div>
+</div>
+
+<script>
+const adminPass = document.getElementById("adminPass");
+const loginBox = document.getElementById("loginBox");
+const adminContent = document.getElementById("adminContent");
+
+const jobsContainer = document.getElementById("jobsContainer");
+const postsContainer = document.getElementById("postsContainer");
+const totalJobs = document.getElementById("totalJobs");
+const totalPosts = document.getElementById("totalPosts");
+const editModal = document.getElementById("editModal");
+
+const STORAGE_JOBS="HIVEX_JOBS";
+const STORAGE_POSTS="HIVE_KNOWLEDGE_POSTS";
+
+let jobs=JSON.parse(localStorage.getItem(STORAGE_JOBS))||[];
+let posts=JSON.parse(localStorage.getItem(STORAGE_POSTS))||[];
+let editIndex=null;
+
+function login(){
+  if(adminPass.value==="admin123"){
+    loginBox.style.display="none";
+    adminContent.style.display="block";
+    renderJobs();
+    renderPosts();
+  } else alert("Wrong password");
+}
+
+function toBase64(file){
+  return new Promise(res=>{
+    if(!file) return res("");
+    const reader=new FileReader();
+    reader.onload=e=>res(e.target.result);
+    reader.readAsDataURL(file);
+  });
+}
+
+/* --- JOB FUNCTIONS --- */
+async function addJob(){
+  if(!jobTitle.value || !jobCompany.value){ alert("Job Title & Company required"); return; }
+
+  jobs.push({
+    title:jobTitle.value,
+    company:jobCompany.value,
+    location:jobLocation.value,
+    description:jobDesc.value,
+    skills:jobSkills.value,
+    applyLink:jobLink.value,
+    logo:await toBase64(jobLogo.files[0])
+  });
+
+  localStorage.setItem(STORAGE_JOBS,JSON.stringify(jobs));
+  renderJobs();
+  document.querySelectorAll("input,textarea").forEach(e=>e.value="");
+  jobLogo.value="";
+}
+
+function renderJobs(){
+  jobsContainer.innerHTML="";
+  totalJobs.innerText=jobs.length;
+
+  jobs.forEach((j,i)=>{
+    jobsContainer.innerHTML+=`
+    <div class="job-card">
+      <img src="${j.logo || 'https://via.placeholder.com/150'}">
+      <div class="job-info">
+        <h4>${j.title}</h4>
+        <p><b>${j.company}</b> • ${j.location}</p>
+        <div class="description">${j.description}</div>
+        ${j.skills.split(",").map(s=>`<span class="badge">${s.trim()}</span>`).join("")}
+        <div class="actions">
+          <button class="btn-outline" onclick="editJob(${i})">Edit</button>
+          <button class="btn-danger" onclick="deleteJob(${i})">Delete</button>
+        </div>
+      </div>
+    </div>`;
+  });
+}
+
+function deleteJob(i){
+  if(confirm("Delete this job?")){
+    jobs.splice(i,1);
+    localStorage.setItem(STORAGE_JOBS,JSON.stringify(jobs));
+    renderJobs();
+  }
+}
+
+function editJob(i){
+  editIndex=i;
+  const j=jobs[i];
+  editTitle.value=j.title;
+  editCompany.value=j.company;
+  editLocation.value=j.location;
+  editDesc.value=j.description;
+  editSkills.value=j.skills;
+  editLink.value=j.applyLink;
+  editModal.style.display="flex";
+}
+
+function saveEdit(){
+  const j=jobs[editIndex];
+  j.title=editTitle.value;
+  j.company=editCompany.value;
+  j.location=editLocation.value;
+  j.description=editDesc.value;
+  j.skills=editSkills.value;
+  j.applyLink=editLink.value;
+
+  localStorage.setItem(STORAGE_JOBS,JSON.stringify(jobs));
+  closeModal();
+  renderJobs();
+}
+
+function closeModal(){ editModal.style.display="none"; }
+
+window.onclick=e=>{ if(e.target===editModal) closeModal(); }
+
+/* --- KNOWLEDGE POST FUNCTIONS --- */
+function toggleContentInput(){
+  const type = document.getElementById('postType').value;
+  document.getElementById('textContentDiv').style.display = type==='text'?'block':'none';
+  document.getElementById('pdfContentDiv').style.display = type==='pdf'?'block':'none';
+}
+
+async function addKnowledgePost(){
+  const title=document.getElementById('postTitle').value;
+  const category=document.getElementById('postCategory').value;
+  const type=document.getElementById('postType').value;
+  let content="";
+
+  if(!title){ alert("Title required"); return; }
+
+  if(type==='text'){
+    content=document.getElementById('postText').value;
+    if(!content){ alert("Text required"); return; }
+  } else {
+    const file=document.getElementById('postPDF').files[0];
+    if(!file){ alert("PDF required"); return; }
+    content=await toBase64(file);
+  }
+
+  posts.push({title, category, type, content});
+  localStorage.setItem(STORAGE_POSTS,JSON.stringify(posts));
+  renderPosts();
+  document.querySelectorAll("input,textarea").forEach(i=>i.value="");
+  document.getElementById('postPDF').value="";
+}
+
+function renderPosts(){
+  postsContainer.innerHTML="";
+  totalPosts.innerText=posts.length;
+
+  posts.forEach((p,i)=>{
+    let displayContent = p.type==='text'?`<p>${p.content}</p>`:`<a href="${p.content}" target="_blank">📄 PDF</a>`;
+    postsContainer.innerHTML+=`
+    <div class="post-card">
+      <h4>${p.title}</h4>
+      <span class="badge">${p.category}</span>
+      <div class="description">${displayContent}</div>
+      <div style="margin-top:10px;display:flex;justify-content:flex-end;gap:5px;">
+        <button class="btn-danger" onclick="deletePost(${i})">Delete</button>
+      </div>
+    </div>`;
+  });
+}
+
+function deletePost(i){
+  if(confirm("Delete this post?")){
+    posts.splice(i,1);
+    localStorage.setItem(STORAGE_POSTS,JSON.stringify(posts));
+    renderPosts();
+  }
+}
+
+</script>
+</body>
+</html>

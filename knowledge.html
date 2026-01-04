@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HiveX Hire | Knowledge Hub</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --primary:#2563eb;
+  --dark:#111827;
+  --gray:#6b7280;
+  --bg:#f3f4f6;
+  --white:#ffffff;
+  --red:#e11d48;
+}
+
+/* RESET */
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+body{background:var(--bg);color:var(--dark);}
+
+/* ================= HEADER ================= */
+header{
+  background:white;
+  height:120px;
+  padding:0 50px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+}
+.logo{
+  display:flex;
+  align-items:center;
+  gap:85px; /* Increased gap so text does not touch logo */
+}
+/* LOGO IMAGE - DO NOT CHANGE SIZE */
+.logo img{
+  width:52px;
+  height:52px;
+  object-fit:contain;
+  border-radius:4px;
+  transform: scale(2.5);
+  transform-origin: left center;
+  transition: transform 0.3s;
+}
+.logo img:hover{
+  transform: scale(2.7);
+}
+/* KNOWLEDGE HUB TEXT - CENTERED VERTICALLY WITH LOGO */
+.logo h2{
+  font-size:22px;
+  font-weight:600;
+  line-height:50px; /* vertically center with logo */
+  margin: 0;
+  position: relative;
+  top: -5px; /* move the text slightly up */
+
+}
+nav a{
+  text-decoration:none;
+  font-weight:500;
+  color:var(--dark);
+  margin-left:25px;
+}
+nav a span{margin-right:6px;}
+
+/* ================= CONTAINERS ================= */
+.container{
+  max-width:1100px;
+  margin:40px auto;
+  padding:0 20px;
+}
+
+/* ================= FAVORITES ================= */
+.fav-section{
+  display:none;
+  margin-bottom:40px;
+}
+.fav-title{
+  font-size:20px;
+  font-weight:600;
+  color:var(--primary);
+  margin-bottom:18px;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:28px;
+}
+
+/* ================= CARD ================= */
+.card{
+  background:white;
+  border-radius:16px;
+  padding:26px 22px;
+  box-shadow:0 8px 22px rgba(0,0,0,.08);
+  transition:.25s;
+  position:relative;
+}
+.card:hover{transform:translateY(-5px);}
+.card h3{
+  color:var(--primary);
+  font-size:20px;
+  margin-bottom:12px;
+}
+.card p{
+  font-size:14.5px;
+  color:#374151;
+  line-height:1.6;
+  margin-bottom:20px;
+}
+
+/* ================= ACTIONS ================= */
+.actions{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.see-more{
+  font-size:14.5px;
+  font-weight:500;
+  color:var(--primary);
+  cursor:pointer;
+}
+.see-more span{margin-left:6px;}
+.heart{
+  font-size:20px;
+  cursor:pointer;
+  color:#9ca3af;
+}
+.heart.active{
+  color:var(--red);
+}
+
+/* ================= MODAL ================= */
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+.modal-box{
+  background:white;
+  border-radius:14px;
+  max-width:600px;
+  width:90%;
+  padding:28px;
+  position:relative;
+}
+.close{
+  position:absolute;
+  top:12px;
+  right:16px;
+  font-size:20px;
+  cursor:pointer;
+}
+
+/* ================= FOOTER ================= */
+footer{
+  background:#111827;
+  color:#e5e7eb;
+  text-align:center;
+  padding:30px 15px;
+  font-size:13px;
+  margin-top:70px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <img src="HiveX Hire.png" alt="HiveX Hire Logo">
+    <h2>Knowledge Hub</h2>
+  </div>
+  <nav>
+    <a href="index.html"><span>🏠</span>Home</a>
+  </nav>
+</header>
+
+<!-- FAVORITE POSTS -->
+<div class="container fav-section" id="favSection">
+  <div class="fav-title">⭐ Favorite Posts</div>
+  <div class="grid" id="favGrid"></div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="container">
+  <div class="grid" id="mainGrid"></div>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <span class="close" onclick="closeModal()">×</span>
+    <h4 id="modalTitle"></h4>
+    <p id="modalBody"></p>
+  </div>
+</div>
+
+<footer>© 2026 HiveX Hire. All rights reserved.</footer>
+
+<script>
+// DEFAULT TIPS + Career Category
+let tips = [
+  {type:"resume", title:"Resume Tips", desc:"A resume is your first impression. Structure and clarity matter."},
+  {type:"interview", title:"Interview Tips", desc:"Confidence, preparation, and communication."},
+  {type:"networking", title:"Networking Tips", desc:"Your personal brand matters more than resumes."},
+  {type:"job", title:"Job Tips", desc:"Understand roles, expectations, and growth paths."},
+  {type:"study", title:"Study Tips", desc:"Learn smarter with focus and planning."},
+  {type:"career", title:"Career Tips", desc:"Guidance for building a successful career path."}
+];
+
+// FAVORITES
+let favs = JSON.parse(localStorage.getItem("favPosts")) || [];
+
+// SYNC ADMIN POSTS
+(function syncAdminKnowledge(){
+  const adminData = JSON.parse(localStorage.getItem("HIVEX_ADMIN_KNOWLEDGE")) || [];
+  let existing = JSON.parse(localStorage.getItem("adminTips")) || [];
+
+  adminData.forEach(post=>{
+    const categoryExists = tips.find(t => t.type === post.type);
+    if(categoryExists && !existing.find(e=> e.title === post.title)){
+      existing.push({
+        type: post.type,
+        title: post.title,
+        desc: post.desc
+      });
+    }
+  });
+
+  localStorage.setItem("adminTips", JSON.stringify(existing));
+})();
+
+// RENDER MAIN GRID
+function renderMain(){
+  const mainGrid = document.getElementById("mainGrid");
+  mainGrid.innerHTML = "";
+
+  let adminTips = JSON.parse(localStorage.getItem("adminTips")) || [];
+
+  tips.forEach(category=>{
+    const mainPost = tips.find(t => t.type === category.type);
+    if(mainPost){
+      const card = document.createElement("div");
+      card.className = "card";
+      card.dataset.type = mainPost.type;
+      card.innerHTML = `
+        <h3>${mainPost.title}</h3>
+        <p>${mainPost.desc}</p>
+        <div class="actions">
+          <div class="see-more" onclick="openModal('${mainPost.type}')">See More <span>→</span></div>
+          <div class="heart ${favs.includes(mainPost.type)?'active':''}" onclick="toggleFav(this,'${mainPost.type}')">${favs.includes(mainPost.type)?'♥':'♡'}</div>
+        </div>
+      `;
+      mainGrid.appendChild(card);
+    }
+
+    adminTips.filter(t=>t.type === category.type).forEach(adminPost=>{
+      const card = document.createElement("div");
+      card.className = "card";
+      card.dataset.type = adminPost.type;
+      card.innerHTML = `
+        <h3>${adminPost.title}</h3>
+        <p>${adminPost.desc}</p>
+        <div class="actions">
+          <div class="see-more" onclick="openModal('${adminPost.type}')">See More <span>→</span></div>
+          <div class="heart ${favs.includes(adminPost.type)?'active':''}" onclick="toggleFav(this,'${adminPost.type}')">${favs.includes(adminPost.type)?'♥':'♡'}</div>
+        </div>
+      `;
+      mainGrid.appendChild(card);
+    });
+  });
+}
+
+// FAVORITES SECTION
+function renderFavs(){
+  const section = document.getElementById("favSection");
+  const grid = document.getElementById("favGrid");
+  grid.innerHTML = "";
+
+  let adminTips = JSON.parse(localStorage.getItem("adminTips")) || [];
+  let allTips = [...tips, ...adminTips];
+
+  if(favs.length===0){
+    section.style.display="none";
+    return;
+  }
+  section.style.display="block";
+
+  favs.forEach(type=>{
+    const tip = allTips.find(t=>t.type===type);
+    if(tip){
+      const card = document.createElement("div");
+      card.className = "card";
+      card.dataset.type = tip.type;
+      card.innerHTML = `
+        <h3>${tip.title}</h3>
+        <p>${tip.desc}</p>
+        <div class="actions">
+          <div class="see-more" onclick="openModal('${tip.type}')">See More <span>→</span></div>
+          <div class="heart active" onclick="toggleFav(this,'${tip.type}')">♥</div>
+        </div>
+      `;
+      grid.appendChild(card);
+    }
+  });
+}
+
+// TOGGLE FAVORITES
+function toggleFav(el,type){
+  el.classList.toggle("active");
+  el.innerText = el.classList.contains("active") ? "♥" : "♡";
+
+  if(el.classList.contains("active")){
+    if(!favs.includes(type)) favs.push(type);
+  }else{
+    favs = favs.filter(f => f !== type);
+  }
+  localStorage.setItem("favPosts", JSON.stringify(favs));
+  renderFavs();
+}
+
+// MODAL
+function openModal(type){
+  let adminTips = JSON.parse(localStorage.getItem("adminTips")) || [];
+  let allTips = [...tips, ...adminTips];
+  const tip = allTips.find(t=>t.type===type);
+
+  document.getElementById("modal").style.display="flex";
+  document.getElementById("modalTitle").innerText = tip ? tip.title : type;
+  document.getElementById("modalBody").innerText = tip ? tip.desc + "\n\nDetailed resources and PDFs will be added here." : "No details available.";
+}
+function closeModal(){document.getElementById("modal").style.display="none";}
+
+// ADMIN ADD TIP (console simulation)
+function addAdminTip(type,title,desc){
+  const typeExists = tips.find(t=>t.type === type);
+  if(!typeExists){
+    alert("Invalid category type. Use existing category type.");
+    return;
+  }
+
+  let adminTips = JSON.parse(localStorage.getItem("adminTips")) || [];
+  adminTips.push({type,title,desc});
+  localStorage.setItem("adminTips", JSON.stringify(adminTips));
+  renderMain();
+  renderFavs();
+}
+
+// INITIAL LOAD
+renderMain();
+renderFavs();
+</script>
+
+</body>
+</html>
